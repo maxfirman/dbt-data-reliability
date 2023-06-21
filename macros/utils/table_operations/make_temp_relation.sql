@@ -27,3 +27,7 @@
         type='table') %}
     {% do return(tmp_relation) %}
 {% endmacro %}
+
+{% macro dremio__make_temp_table_relation(base_relation, suffix) %}
+    {% do return(databricks__make_temp_table_relation(base_relation, suffix)) %}
+{% endmacro %}
