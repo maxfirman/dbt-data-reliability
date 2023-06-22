@@ -18,3 +18,7 @@
 {% macro bigquery__target_database() %}
     {% do return(target.project) %}
 {% endmacro %}
+
+{% macro dremio__target_database() %}
+    {% do return(target.object_storage_path) %}
+{% endmacro %}
