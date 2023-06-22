@@ -22,6 +22,9 @@
     current_timestamp()
 {% endmacro %}
 
+{% macro dremio__edr_current_timestamp() %}
+    current_timestamp()
+{% endmacro %}
 
 {% macro edr_current_timestamp_in_utc() -%}
     {{ adapter.dispatch('edr_current_timestamp_in_utc','elementary')() }}
