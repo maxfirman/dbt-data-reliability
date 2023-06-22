@@ -95,3 +95,26 @@
     {%- endset %}
     {{ return(complete_buckets_cte) }}
 {% endmacro %}
+
+
+{% macro dremio__complete_buckets_cte(time_bucket, bucket_end_expr, min_bucket_start_expr, max_bucket_end_expr) %}
+    {%- set complete_buckets_cte %}
+        with x as (
+            select n
+            from (values 0, 1, 2, 3, 4, 5, 6, 7, 8, 9) v (n)),
+        integers as (
+            select row_number() over(order by(select null)) - 1 as n
+            from x ones,
+                 x tens,
+                 x hundreds,
+                 x thousands
+            limit {{ elementary.edr_datediff(min_bucket_start_expr, max_bucket_end_expr, time_bucket.period) }} / {{ time_bucket.count }} + 1
+        )
+        select
+            {{ min_bucket_start_expr }} + (num * interval '{{ time_bucket.count }} {{ time_bucket.period }}') as edr_bucket_start,
+            {{ min_bucket_start_expr }} + ((num + 1) * interval '{{ time_bucket.count }} {{ time_bucket.period }}') as edr_bucket_end
+        from integers
+        where edr_bucket_end <= {{ max_bucket_end_expr }}
+    {%- endset %}
+    {{ return(complete_buckets_cte) }}
+{% endmacro %}

@@ -12,3 +12,7 @@
 {% macro bigquery__timediff(timepart, first_timestamp, second_timestamp) %}
     timestamp_diff({{ second_timestamp }}, {{ first_timestamp }}, {{ timepart }})
 {% endmacro %}
+
+{% macro dremio__timediff(timepart, first_timestamp, second_timestamp) %}
+    timestampdiff({{ timepart }}, {{ first_timestamp }}, {{ second_timestamp }})
+{% endmacro %}

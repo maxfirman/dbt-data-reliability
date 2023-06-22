@@ -15,6 +15,10 @@
     {% do elementary.insert_rows(relation, rows, should_commit=false, chunk_size=elementary.get_config_var('dbt_artifacts_chunk_size')) %}
 {% endmacro %}
 
+{% macro dremio__replace_table_data(relation, rows) %}
+    {% do return(spark__replace_table_data(relation, rows)) %}
+{% endmacro %}
+
 {# In Postgres / Redshift we do not want to replace the table, because that will cause views without
    late binding to be deleted. So instead we atomically replace the data in a transaction #}
 {% macro postgres__replace_table_data(relation, rows) %}

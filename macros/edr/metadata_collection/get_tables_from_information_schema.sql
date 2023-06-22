@@ -86,3 +86,40 @@
         table_name
     from information_schema_tables
 {% endmacro %}
+
+{% macro dremio__get_tables_from_information_schema(schema_tuple) %}
+    {%- set database_name, schema_name = schema_tuple %}
+
+    with information_schema_tables as (
+
+        select
+            upper(table_catalog) as database_name,
+            upper(table_schema) as schema_name,
+            upper(table_name) as table_name
+        from INFORMATION_SCHEMA."TABLES"
+        where upper(table_schema) = upper('{{ database_name }}.{{ schema_name }}')
+
+    ),
+
+    information_schema_schemata as (
+
+        select
+            upper(catalog_name) as database_name,
+            upper(schema_name) as schema_name
+        from INFORMATION_SCHEMA.SCHEMATA
+        where upper(schema_name) = upper('{{ database_name }}.{{ schema_name }}')
+
+    )
+
+    select
+        case when information_schema_tables.table_name is not null
+            then {{ elementary.full_table_name('information_schema_tables') }}
+        else null end as full_table_name,
+        upper(information_schema_schemata.database_name || '.' || information_schema_schemata.schema_name) as full_schema_name,
+        information_schema_schemata.database_name as database_name,
+        information_schema_schemata.schema_name as schema_name,
+        information_schema_tables.table_name
+    from information_schema_tables
+    full outer join information_schema_schemata
+    on (information_schema_tables.database_name = information_schema_schemata.database_name and information_schema_tables.schema_name = information_schema_schemata.schema_name)
+{% endmacro %}
