@@ -49,3 +49,7 @@
 {% macro spark__edr_current_timestamp_in_utc() %}
     unix_timestamp()
 {% endmacro %}
+
+{% macro dremio__edr_current_timestamp_in_utc() %}
+    unix_timestamp()
+{% endmacro %}
