@@ -85,7 +85,7 @@
                 updated_at,
                 dimension,
                 dimension_value,
-                row_number() over (partition by id order by updated_at desc) as row_number
+                row_number() over (partition by id order by updated_at desc) as "row_number"
             from union_metrics
 
         ),
@@ -107,7 +107,7 @@
                 bucket_duration_hours,
                 updated_at
             from grouped_metrics_duplicates
-            where row_number = 1
+            where "row_number" = 1
 
         ),
 
