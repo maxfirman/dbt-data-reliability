@@ -25,3 +25,7 @@
         {{ exceptions.raise_compiler_error("Unsupported date_part in edr_datediff: ".format(date_part)) }}
     {%- endif %}
 {% endmacro %}
+
+{% macro dremio__edr_datediff(first_date, second_date, date_part) %}
+    timestampdiff({{ date_part }}, {{ first_date }}, {{ second_date }})
+{% endmacro %}
