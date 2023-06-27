@@ -15,10 +15,22 @@
 #}
 
 
+{%- macro edr_hash(field) -%}
+    {{ adapter.dispatch('edr_hash', 'elementary')(field) }}
+{%- endmacro -%}
+
+{%- macro default__edr_hash(field) -%}
+  {% set hash_macro = dbt.hash or dbt_utils.hash %}
+  {{ hash_macro(field) }}
+{%- endmacro -%}
+
+-- FIXME: See https://github.com/dremio/dbt-dremio/issues/189
+{%- macro dremio__edr_hash(field) -%}
+  md5(cast({{ field }} as varchar))
+{%- endmacro -%}
+
 {%- macro generate_surrogate_key(fields) -%}
   {% set concat_macro = dbt.concat or dbt_utils.concat %}
-  {% set hash_macro = dbt.hash or dbt_utils.hash %}
-
   {% set default_null_value = "" %}
   {%- set field_sqls = [] -%}
   {%- for field in fields -%}
@@ -29,5 +41,5 @@
         {%- do field_sqls.append("'-'") -%}
     {%- endif -%}
   {%- endfor -%}
-  {{ hash_macro(concat_macro(field_sqls)) }}
+  {{ elementary.edr_hash(concat_macro(field_sqls)) }}
 {% endmacro %}
