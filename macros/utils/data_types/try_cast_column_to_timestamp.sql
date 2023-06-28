@@ -23,6 +23,3 @@
     {{ return(false) }}
 {% endmacro %}
 
-{% macro dremio__try_cast_column_to_timestamp(table_relation, timestamp_column) %}
-    {{ return(false) }}
-{% endmacro %}

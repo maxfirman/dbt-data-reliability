@@ -61,7 +61,7 @@
       )
 
       select
-        metric_value as value,
+        metric_value as "value",
         training_avg as average,
         {# when there is an anomaly we would want to use the last value of the metric (lag), otherwise visually the expectations would look out of bounds #}
         case
