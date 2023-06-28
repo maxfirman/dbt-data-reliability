@@ -25,3 +25,9 @@
     {% do run_query(dbt.create_table_as(temporary, relation, sql_query)) %}
     {% do adapter.commit() %}
 {% endmacro %}
+
+{% macro dremio__create_or_replace(temporary, relation, sql_query) %}
+    {% do dbt.drop_relation_if_exists(relation) %}
+    {% do run_query(dbt.create_table_as(temporary, relation, sql_query)) %}
+    {% do adapter.commit() %}
+{% endmacro %}
