@@ -267,7 +267,7 @@
 {% else %}
     select
         {{ elementary.const_as_string('event_freshness') }} as metric_name,
-        {{ elementary.timediff('second', elementary.edr_cast_as_timestamp("max({})".format(event_timestamp_column)), elementary.edr_quote(elementary.get_run_started_at())) }} as metric_value
+        {{ elementary.timediff('second', elementary.edr_cast_as_timestamp("max({})".format(event_timestamp_column)), elementary.edr_cast_as_timestamp(elementary.edr_quote(elementary.get_run_started_at()))) }} as metric_value
     from monitored_table
     group by 1
 {% endif %}
