@@ -60,6 +60,18 @@
     trim(split_part(full_table_name,'.',{{ part_index }}),'"') as {{ part_name }}
 {% endmacro %}
 
+{% macro dremio__full_name_split(part_name) %}
+    {%- if part_name == 'database_name' -%}
+        {%- set part_index = 1 -%}
+    {%- elif part_name == 'schema_name' -%}
+        {%- set part_index = 2 -%}
+    {%- elif part_name == 'table_name' -%}
+        {%- set part_index = 3 -%}
+    {%- else -%}
+        {{ return('') }}
+    {%- endif -%}
+    trim('"' from split_part(full_table_name, '.', {{ part_index }})) as {{ part_name }}
+{% endmacro %}
 
 {% macro relation_to_full_name(relation) %}
     {%- if relation.is_cte %}
