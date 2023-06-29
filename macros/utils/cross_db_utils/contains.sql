@@ -31,3 +31,11 @@
         else false end
     {%- endif %}
 {% endmacro %}
+
+{% macro dremio__contains(string, string_to_search, case_sensitive) %}
+    {%- if case_sensitive %}
+        {{ string }} like '%{{ string_to_search }}%'
+    {%- else %}
+        lower({{ string }}) like lower('%{{ string_to_search }}%')
+    {%- endif %}
+{% endmacro %}
