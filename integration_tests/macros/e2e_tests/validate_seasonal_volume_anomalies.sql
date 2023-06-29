@@ -12,7 +12,7 @@
     {% set anomalous_result_rows_description_query %}
         with test_result_rows as
             (
-            {{ test_result_rows_query[0] }}
+            {{ test_result_rows_query[0] | replace("\\n", "\n") }}
             ) select distinct metric_value
               from test_result_rows
               where is_anomalous
