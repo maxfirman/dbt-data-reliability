@@ -3,7 +3,7 @@ with min_len_issues as (
 ),
 
 min_issues as (
-    select min as min_issue from {{ ref('numeric_column_anomalies') }} where min < 100
+    select "min" as min_issue from {{ ref('numeric_column_anomalies') }} where "min" < 100
 ),
 
 all_issues as (

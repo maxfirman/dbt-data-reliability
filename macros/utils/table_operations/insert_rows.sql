@@ -116,10 +116,33 @@
     {{- return(string_value | replace("'", "''")) -}}
 {%- endmacro -%}
 
+{%- macro dremio__escape_special_chars(string_value) -%}
+    {{- return(string_value | replace("\\", "\\\\") | replace("'", "''") | replace("\n", "\\n") | replace("\r", "\\r")) -}}
+{%- endmacro -%}
+
+{% macro format_numeric_value(numeric_value) %}
+    {{ return(adapter.dispatch('format_numeric_value', 'elementary')(numeric_value)) }}
+{% endmacro %}
+
+{%- macro default__format_numeric_value(numeric_value) -%}
+    {{- return(numeric_value) -}}
+{%- endmacro -%}
+
+{%- macro dremio__format_numeric_value(numeric_value) -%}
+    {% set formatted_numeric_value %}
+        {%- if value is float -%}
+            cast({{ numeric_value }} as float))
+        {%- else -%}
+            {{ numeric_value }}
+        {%- endif -%}
+    {% endset %}
+    {{- return(formatted_numeric_value) -}}
+{%- endmacro -%}
+
 {%- macro render_value(value) -%}
     {%- if value is defined and value is not none -%}
         {%- if value is number -%}
-            {{- value -}}
+            '{{- elementary.format_numeric_value(value) -}}'
         {%- elif value is string -%}
             '{{- elementary.escape_special_chars(value) -}}'
         {%- elif value is mapping or value is sequence -%}

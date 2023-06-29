@@ -95,3 +95,36 @@
     {%- endset %}
     {{ return(complete_buckets_cte) }}
 {% endmacro %}
+
+
+{% macro dremio__complete_buckets_cte(time_bucket, bucket_end_expr, min_bucket_start_expr, max_bucket_end_expr) %}
+    {%- if time_bucket.period | lower == 'week' %}
+        {%- set time_bucket_count = 7 * time_bucket.count %}
+        {%- set time_bucket_period = 'day' %}
+    {%- elif time_bucket.period | lower == 'quarter' %}
+        {%- set time_bucket_count = 3 * time_bucket.count %}
+        {%- set time_bucket_period = 'month' %}
+    {%- else %}
+        {%- set time_bucket_count = time_bucket.count %}
+        {%- set time_bucket_period = time_bucket.period %}
+    {%- endif -%}
+
+    {%- set complete_buckets_cte %}
+        with x as (
+            select num
+            from (values 0, 1, 2, 3, 4, 5, 6, 7, 8, 9) v (num)),
+        integers as (
+            select row_number() over(order by(select null)) - 1 as num
+            from x ones,
+                 x tens,
+                 x hundreds,
+                 x thousands
+        )
+        select
+            date_add({{ min_bucket_start_expr }}, cast(num * {{ time_bucket_count }} as interval {{ time_bucket_period }})) as edr_bucket_start,
+            date_add({{ min_bucket_start_expr }}, cast((num + 1) * {{ time_bucket_count }} as interval {{ time_bucket_period }})) as edr_bucket_end
+        from integers
+        where edr_bucket_end <= {{ max_bucket_end_expr }}
+    {%- endset %}
+    {{ return(complete_buckets_cte) }}
+{% endmacro %}

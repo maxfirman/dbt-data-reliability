@@ -1,5 +1,13 @@
 {%- macro edr_cast_as_timestamp(timestamp_field) -%}
+    {{ return(adapter.dispatch('edr_cast_as_timestamp', 'elementary')(timestamp_field)) }}
+{%- endmacro -%}
+
+{%- macro default__edr_cast_as_timestamp(timestamp_field) -%}
     cast({{ timestamp_field }} as {{ elementary.edr_type_timestamp() }})
+{%- endmacro -%}
+
+{%- macro dremio__edr_cast_as_timestamp(timestamp_field) -%}
+    cast(replace({{ timestamp_field }}, 'T', ' ') as timestamp)
 {%- endmacro -%}
 
 {%- macro edr_cast_as_float(column) -%}

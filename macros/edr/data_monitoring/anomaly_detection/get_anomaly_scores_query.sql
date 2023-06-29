@@ -85,7 +85,7 @@
                 updated_at,
                 dimension,
                 dimension_value,
-                row_number() over (partition by id order by updated_at desc) as row_number
+                row_number() over (partition by id order by updated_at desc) as "row_number"
             from union_metrics
 
         ),
@@ -107,7 +107,7 @@
                 bucket_duration_hours,
                 updated_at
             from grouped_metrics_duplicates
-            where row_number = 1
+            where "row_number" = 1
 
         ),
 
@@ -128,7 +128,7 @@
                 bucket_duration_hours,
                 updated_at,
                 avg(metric_value) over (partition by metric_name, full_table_name, column_name, dimension, dimension_value, bucket_seasonality order by bucket_end asc rows between unbounded preceding and current row) as training_avg,
-                stddev(metric_value) over (partition by metric_name, full_table_name, column_name, dimension, dimension_value, bucket_seasonality order by bucket_end asc rows between unbounded preceding and current row) as training_stddev,
+                {{ elementary.edr_stddev('metric_value') }} over (partition by metric_name, full_table_name, column_name, dimension, dimension_value, bucket_seasonality order by bucket_end asc rows between unbounded preceding and current row) as training_stddev,
                 count(metric_value) over (partition by metric_name, full_table_name, column_name, dimension, dimension_value, bucket_seasonality order by bucket_end asc rows between unbounded preceding and current row) as training_set_size,
                 last_value(bucket_end) over (partition by metric_name, full_table_name, column_name, dimension, dimension_value, bucket_seasonality order by bucket_end asc rows between unbounded preceding and current row) training_end,
                 first_value(bucket_end) over (partition by metric_name, full_table_name, column_name, dimension, dimension_value, bucket_seasonality order by bucket_end asc rows between unbounded preceding and current row) as training_start

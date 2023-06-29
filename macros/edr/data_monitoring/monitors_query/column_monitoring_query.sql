@@ -49,8 +49,8 @@
                     {{ elementary.const_as_string(column_obj.name) }} as edr_column_name,
                     {%- if 'null_count' in column_monitors -%} {{ elementary.null_count(column) }} {%- else -%} null {% endif %} as null_count,
                     {%- if 'null_percent' in column_monitors -%} {{ elementary.null_percent(column) }} {%- else -%} null {% endif %} as null_percent,
-                    {%- if 'max' in column_monitors -%} {{ elementary.max(column) }} {%- else -%} null {% endif %} as max,
-                    {%- if 'min' in column_monitors -%} {{ elementary.min(column) }} {%- else -%} null {% endif %} as min,
+                    {%- if 'max' in column_monitors -%} {{ elementary.max(column) }} {%- else -%} null {% endif %} as "max",
+                    {%- if 'min' in column_monitors -%} {{ elementary.min(column) }} {%- else -%} null {% endif %} as "min",
                     {%- if 'average' in column_monitors -%} {{ elementary.average(column) }} {%- else -%} null {% endif %} as average,
                     {%- if 'zero_count' in column_monitors -%} {{ elementary.zero_count(column) }} {%- else -%} null {% endif %} as zero_count,
                     {%- if 'zero_percent' in column_monitors -%} {{ elementary.zero_percent(column) }} {%- else -%} null {% endif %} as zero_percent,
@@ -61,7 +61,7 @@
                     {%- if 'average_length' in column_monitors -%} {{ elementary.average_length(column) }} {%- else -%} null {% endif %} as average_length,
                     {%- if 'missing_count' in column_monitors -%} {{ elementary.missing_count(column) }} {%- else -%} null {% endif %} as missing_count,
                     {%- if 'missing_percent' in column_monitors -%} {{ elementary.missing_percent(column) }} {%- else -%} null {% endif %} as missing_percent,
-                    {%- if 'sum' in column_monitors -%} {{ elementary.sum(column) }} {%- else -%} null {% endif %} as sum
+                    {%- if 'sum' in column_monitors -%} {{ elementary.sum(column) }} {%- else -%} null {% endif %} as "sum"
                 from filtered_monitored_table
                 {%- if timestamp_column %}
                     left join buckets on (edr_bucket_start = start_bucket_in_data)
@@ -77,7 +77,7 @@
 
         {%- if column_monitors %}
             {% for monitor in column_monitors %}
-                select edr_column_name, bucket_start, bucket_end, bucket_duration_hours, {{ elementary.edr_cast_as_string(elementary.edr_quote(monitor)) }} as metric_name, {{ elementary.edr_cast_as_float(monitor) }} as metric_value from column_monitors where {{ monitor }} is not null
+                select edr_column_name, bucket_start, bucket_end, bucket_duration_hours, {{ elementary.edr_cast_as_string(elementary.edr_quote(monitor)) }} as metric_name, {{ elementary.edr_cast_as_float(elementary.edr_double_quote(monitor)) }} as metric_value from column_monitors where "{{ monitor }}" is not null
                 {% if not loop.last %} union all {% endif %}
             {%- endfor %}
         {%- else %}

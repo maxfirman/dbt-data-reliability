@@ -25,3 +25,7 @@
 {% macro redshift__edr_timeadd(date_part, number, timestamp_expression) %}
     dateadd({{ date_part }}, {{ elementary.edr_cast_as_int(number) }}, {{ elementary.edr_cast_as_timestamp(timestamp_expression) }})
 {% endmacro %}
+
+{% macro dremio__edr_timeadd(date_part, number, timestamp_expression) %}
+    timestampadd({{ date_part }}, {{ elementary.edr_cast_as_int(number) }}, {{ elementary.edr_cast_as_timestamp(timestamp_expression) }})
+{% endmacro %}

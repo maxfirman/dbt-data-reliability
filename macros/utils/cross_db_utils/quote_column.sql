@@ -17,3 +17,6 @@
     {% endif %}
 {%- endmacro -%}
 
+{% macro edr_double_quote(str) %}
+    {% do return("\"{}\"".format(str)) %}
+{% endmacro %}
